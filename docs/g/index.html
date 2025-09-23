@@ -1,0 +1,816 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Character Gallery</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1600px;
+            margin: 0 auto;
+        }
+
+        h1 {
+            text-align: center;
+            color: white;
+            font-size: 3em;
+            margin-bottom: 30px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+        }
+
+        .gallery {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
+            gap: 10px;
+            background: rgba(255, 255, 255, 0.95);
+            padding: 20px;
+            border-radius: 15px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+        }
+
+        .emoji-card {
+            aspect-ratio: 1;
+            background: linear-gradient(135deg, var(--c1), var(--c2));
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 40px;
+            cursor: pointer;
+            transition: all 0.2s;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            position: relative;
+        }
+
+        .emoji-card:hover {
+            transform: scale(1.1) rotate(5deg);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.2);
+            z-index: 10;
+        }
+
+        .emoji-card.animal {
+            --c1: #FFE5B4;
+            --c2: #FFD4A3;
+        }
+
+        .emoji-card.nature {
+            --c1: #98FB98;
+            --c2: #90EE90;
+        }
+
+        .emoji-card.food {
+            --c1: #FFD700;
+            --c2: #FFA500;
+        }
+
+        .emoji-card.object {
+            --c1: #87CEEB;
+            --c2: #87CEFA;
+        }
+
+        .emoji-card.face {
+            --c1: #FFE4B5;
+            --c2: #FFDAB9;
+        }
+
+        .emoji-card.heart {
+            --c1: #FFB6C1;
+            --c2: #FF69B4;
+        }
+
+        .emoji-card.sport {
+            --c1: #98D8C8;
+            --c2: #7FD8BE;
+        }
+
+        .emoji-card.music {
+            --c1: #DDA0DD;
+            --c2: #DA70D6;
+        }
+
+        .emoji-card.weather {
+            --c1: #87CEEB;
+            --c2: #00BFFF;
+        }
+
+        .emoji-card.space {
+            --c1: #191970;
+            --c2: #6A5ACD;
+        }
+
+        /* Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.9);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            position: relative;
+            width: 400px;
+            height: 400px;
+            background: linear-gradient(135deg, var(--modal-c1), var(--modal-c2));
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 200px;
+        }
+
+        .modal-close {
+            position: absolute;
+            top: -50px;
+            right: -50px;
+            background: white;
+            border: none;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            font-size: 24px;
+            cursor: pointer;
+        }
+
+        .modal-nav {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            background: white;
+            border: none;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            font-size: 24px;
+            cursor: pointer;
+        }
+
+        .modal-nav:hover {
+            background: #f0f0f0;
+        }
+
+        .modal-nav.prev {
+            left: -80px;
+        }
+
+        .modal-nav.next {
+            right: -80px;
+        }
+
+        .modal-info {
+            position: absolute;
+            bottom: -40px;
+            left: 50%;
+            transform: translateX(-50%);
+            color: white;
+            font-size: 14px;
+        }
+
+        /* Context Menu */
+        .context-menu {
+            display: none;
+            position: fixed;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+            padding: 5px 0;
+            z-index: 2000;
+        }
+
+        .context-menu.active {
+            display: block;
+        }
+
+        .menu-item {
+            padding: 10px 20px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+
+        .menu-item:hover {
+            background: #f0f0f0;
+        }
+
+        @media (max-width: 768px) {
+            .gallery {
+                grid-template-columns: repeat(auto-fill, minmax(60px, 1fr));
+                gap: 8px;
+            }
+
+            .emoji-card {
+                font-size: 30px;
+            }
+
+            h1 {
+                font-size: 2em;
+            }
+
+            .modal-nav.prev {
+                left: 10px;
+            }
+
+            .modal-nav.next {
+                right: 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Character Gallery</h1>
+        <div class="gallery" id="gallery"></div>
+    </div>
+
+    <!-- Modal -->
+    <div class="modal" id="modal">
+        <button class="modal-close" onclick="closeModal()">×</button>
+        <button class="modal-nav prev" onclick="navigate(-1)">‹</button>
+        <div class="modal-content" id="modalContent">
+            <span id="modalEmoji"></span>
+        </div>
+        <button class="modal-nav next" onclick="navigate(1)">›</button>
+        <div class="modal-info" id="modalInfo"></div>
+    </div>
+
+    <!-- Context Menu -->
+    <div class="context-menu" id="contextMenu">
+        <div class="menu-item" onclick="downloadEmoji()">Download</div>
+        <div class="menu-item" onclick="copyEmoji()">Copy Emoji</div>
+    </div>
+
+    <script>
+        const emojiData = [
+            // Animals
+            { emoji: '🐶', category: 'animal' },
+            { emoji: '🐱', category: 'animal' },
+            { emoji: '🐭', category: 'animal' },
+            { emoji: '🐹', category: 'animal' },
+            { emoji: '🐰', category: 'animal' },
+            { emoji: '🦊', category: 'animal' },
+            { emoji: '🐻', category: 'animal' },
+            { emoji: '🐼', category: 'animal' },
+            { emoji: '🐨', category: 'animal' },
+            { emoji: '🐯', category: 'animal' },
+            { emoji: '🦁', category: 'animal' },
+            { emoji: '🐮', category: 'animal' },
+            { emoji: '🐷', category: 'animal' },
+            { emoji: '🐸', category: 'animal' },
+            { emoji: '🐵', category: 'animal' },
+            { emoji: '🙈', category: 'animal' },
+            { emoji: '🙉', category: 'animal' },
+            { emoji: '🙊', category: 'animal' },
+            { emoji: '🐒', category: 'animal' },
+            { emoji: '🐔', category: 'animal' },
+            { emoji: '🐧', category: 'animal' },
+            { emoji: '🐦', category: 'animal' },
+            { emoji: '🐤', category: 'animal' },
+            { emoji: '🐣', category: 'animal' },
+            { emoji: '🐥', category: 'animal' },
+            { emoji: '🦆', category: 'animal' },
+            { emoji: '🦅', category: 'animal' },
+            { emoji: '🦉', category: 'animal' },
+            { emoji: '🦇', category: 'animal' },
+            { emoji: '🐺', category: 'animal' },
+            { emoji: '🐗', category: 'animal' },
+            { emoji: '🐴', category: 'animal' },
+            { emoji: '🦄', category: 'animal' },
+            { emoji: '🐝', category: 'animal' },
+            { emoji: '🐛', category: 'animal' },
+            { emoji: '🦋', category: 'animal' },
+            { emoji: '🐌', category: 'animal' },
+            { emoji: '🐞', category: 'animal' },
+            { emoji: '🐜', category: 'animal' },
+            { emoji: '🦟', category: 'animal' },
+            { emoji: '🦗', category: 'animal' },
+            { emoji: '🕷️', category: 'animal' },
+            { emoji: '🦂', category: 'animal' },
+            { emoji: '🐢', category: 'animal' },
+            { emoji: '🐍', category: 'animal' },
+            { emoji: '🦎', category: 'animal' },
+            { emoji: '🦖', category: 'animal' },
+            { emoji: '🦕', category: 'animal' },
+            { emoji: '🐙', category: 'animal' },
+            { emoji: '🦑', category: 'animal' },
+            { emoji: '🦐', category: 'animal' },
+            { emoji: '🦞', category: 'animal' },
+            { emoji: '🦀', category: 'animal' },
+            { emoji: '🐡', category: 'animal' },
+            { emoji: '🐠', category: 'animal' },
+            { emoji: '🐟', category: 'animal' },
+            { emoji: '🐬', category: 'animal' },
+            { emoji: '🐳', category: 'animal' },
+            { emoji: '🐋', category: 'animal' },
+            { emoji: '🦈', category: 'animal' },
+            { emoji: '🐊', category: 'animal' },
+            { emoji: '🐅', category: 'animal' },
+            { emoji: '🐆', category: 'animal' },
+            { emoji: '🦓', category: 'animal' },
+            { emoji: '🦍', category: 'animal' },
+            { emoji: '🦧', category: 'animal' },
+            { emoji: '🐘', category: 'animal' },
+            { emoji: '🦛', category: 'animal' },
+            { emoji: '🦏', category: 'animal' },
+            { emoji: '🐪', category: 'animal' },
+            { emoji: '🐫', category: 'animal' },
+            { emoji: '🦒', category: 'animal' },
+            { emoji: '🦘', category: 'animal' },
+            { emoji: '🐃', category: 'animal' },
+            { emoji: '🐂', category: 'animal' },
+            { emoji: '🐄', category: 'animal' },
+            { emoji: '🐎', category: 'animal' },
+            { emoji: '🐖', category: 'animal' },
+            { emoji: '🐏', category: 'animal' },
+            { emoji: '🐑', category: 'animal' },
+            { emoji: '🦙', category: 'animal' },
+            { emoji: '🐐', category: 'animal' },
+            { emoji: '🦌', category: 'animal' },
+            { emoji: '🐕', category: 'animal' },
+            { emoji: '🐩', category: 'animal' },
+            { emoji: '🦮', category: 'animal' },
+            { emoji: '🐈', category: 'animal' },
+            { emoji: '🐓', category: 'animal' },
+            { emoji: '🦃', category: 'animal' },
+            { emoji: '🦚', category: 'animal' },
+            { emoji: '🦜', category: 'animal' },
+            { emoji: '🦢', category: 'animal' },
+            { emoji: '🦩', category: 'animal' },
+            { emoji: '🦦', category: 'animal' },
+            { emoji: '🦥', category: 'animal' },
+            { emoji: '🦫', category: 'animal' },
+            { emoji: '🦨', category: 'animal' },
+            { emoji: '🦡', category: 'animal' },
+            
+            // Nature
+            { emoji: '🌸', category: 'nature' },
+            { emoji: '💮', category: 'nature' },
+            { emoji: '🏵️', category: 'nature' },
+            { emoji: '🌹', category: 'nature' },
+            { emoji: '🥀', category: 'nature' },
+            { emoji: '🌺', category: 'nature' },
+            { emoji: '🌻', category: 'nature' },
+            { emoji: '🌼', category: 'nature' },
+            { emoji: '🌷', category: 'nature' },
+            { emoji: '🌱', category: 'nature' },
+            { emoji: '🌲', category: 'nature' },
+            { emoji: '🌳', category: 'nature' },
+            { emoji: '🌴', category: 'nature' },
+            { emoji: '🌵', category: 'nature' },
+            { emoji: '🌾', category: 'nature' },
+            { emoji: '🌿', category: 'nature' },
+            { emoji: '☘️', category: 'nature' },
+            { emoji: '🍀', category: 'nature' },
+            { emoji: '🍁', category: 'nature' },
+            { emoji: '🍂', category: 'nature' },
+            { emoji: '🍃', category: 'nature' },
+            { emoji: '🍄', category: 'nature' },
+            
+            // Food
+            { emoji: '🍇', category: 'food' },
+            { emoji: '🍈', category: 'food' },
+            { emoji: '🍉', category: 'food' },
+            { emoji: '🍊', category: 'food' },
+            { emoji: '🍋', category: 'food' },
+            { emoji: '🍌', category: 'food' },
+            { emoji: '🍍', category: 'food' },
+            { emoji: '🥭', category: 'food' },
+            { emoji: '🍎', category: 'food' },
+            { emoji: '🍏', category: 'food' },
+            { emoji: '🍐', category: 'food' },
+            { emoji: '🍑', category: 'food' },
+            { emoji: '🍒', category: 'food' },
+            { emoji: '🍓', category: 'food' },
+            { emoji: '🫐', category: 'food' },
+            { emoji: '🥝', category: 'food' },
+            { emoji: '🍅', category: 'food' },
+            { emoji: '🫒', category: 'food' },
+            { emoji: '🥥', category: 'food' },
+            { emoji: '🥑', category: 'food' },
+            { emoji: '🍆', category: 'food' },
+            { emoji: '🥔', category: 'food' },
+            { emoji: '🥕', category: 'food' },
+            { emoji: '🌽', category: 'food' },
+            { emoji: '🌶️', category: 'food' },
+            { emoji: '🫑', category: 'food' },
+            { emoji: '🥒', category: 'food' },
+            { emoji: '🥬', category: 'food' },
+            { emoji: '🥦', category: 'food' },
+            { emoji: '🧄', category: 'food' },
+            { emoji: '🧅', category: 'food' },
+            { emoji: '🍞', category: 'food' },
+            { emoji: '🥐', category: 'food' },
+            { emoji: '🥖', category: 'food' },
+            { emoji: '🥨', category: 'food' },
+            { emoji: '🥯', category: 'food' },
+            { emoji: '🥞', category: 'food' },
+            { emoji: '🧇', category: 'food' },
+            { emoji: '🧀', category: 'food' },
+            { emoji: '🍖', category: 'food' },
+            { emoji: '🍗', category: 'food' },
+            { emoji: '🥩', category: 'food' },
+            { emoji: '🥓', category: 'food' },
+            { emoji: '🍔', category: 'food' },
+            { emoji: '🍟', category: 'food' },
+            { emoji: '🍕', category: 'food' },
+            { emoji: '🌭', category: 'food' },
+            { emoji: '🥪', category: 'food' },
+            { emoji: '🌮', category: 'food' },
+            { emoji: '🌯', category: 'food' },
+            { emoji: '🫔', category: 'food' },
+            { emoji: '🥙', category: 'food' },
+            { emoji: '🧆', category: 'food' },
+            { emoji: '🥚', category: 'food' },
+            { emoji: '🍳', category: 'food' },
+            { emoji: '🥘', category: 'food' },
+            { emoji: '🍲', category: 'food' },
+            { emoji: '🫕', category: 'food' },
+            { emoji: '🥗', category: 'food' },
+            { emoji: '🍿', category: 'food' },
+            { emoji: '🧈', category: 'food' },
+            { emoji: '🧂', category: 'food' },
+            { emoji: '🥫', category: 'food' },
+            { emoji: '🍱', category: 'food' },
+            { emoji: '🍘', category: 'food' },
+            { emoji: '🍙', category: 'food' },
+            { emoji: '🍚', category: 'food' },
+            { emoji: '🍛', category: 'food' },
+            { emoji: '🍜', category: 'food' },
+            { emoji: '🍝', category: 'food' },
+            { emoji: '🍠', category: 'food' },
+            { emoji: '🍢', category: 'food' },
+            { emoji: '🍣', category: 'food' },
+            { emoji: '🍤', category: 'food' },
+            { emoji: '🍥', category: 'food' },
+            { emoji: '🥮', category: 'food' },
+            { emoji: '🍡', category: 'food' },
+            { emoji: '🥟', category: 'food' },
+            { emoji: '🥠', category: 'food' },
+            { emoji: '🥡', category: 'food' },
+            { emoji: '🍦', category: 'food' },
+            { emoji: '🍧', category: 'food' },
+            { emoji: '🍨', category: 'food' },
+            { emoji: '🍩', category: 'food' },
+            { emoji: '🍪', category: 'food' },
+            { emoji: '🎂', category: 'food' },
+            { emoji: '🍰', category: 'food' },
+            { emoji: '🧁', category: 'food' },
+            { emoji: '🥧', category: 'food' },
+            { emoji: '🍫', category: 'food' },
+            { emoji: '🍬', category: 'food' },
+            { emoji: '🍭', category: 'food' },
+            { emoji: '🍮', category: 'food' },
+            { emoji: '🍯', category: 'food' },
+            
+            // Objects
+            { emoji: '⚽', category: 'sport' },
+            { emoji: '🏀', category: 'sport' },
+            { emoji: '🏈', category: 'sport' },
+            { emoji: '⚾', category: 'sport' },
+            { emoji: '🥎', category: 'sport' },
+            { emoji: '🎾', category: 'sport' },
+            { emoji: '🏐', category: 'sport' },
+            { emoji: '🏉', category: 'sport' },
+            { emoji: '🥏', category: 'sport' },
+            { emoji: '🎱', category: 'sport' },
+            { emoji: '🪀', category: 'sport' },
+            { emoji: '🏓', category: 'sport' },
+            { emoji: '🏸', category: 'sport' },
+            { emoji: '🏒', category: 'sport' },
+            { emoji: '🏑', category: 'sport' },
+            { emoji: '🥍', category: 'sport' },
+            { emoji: '🏏', category: 'sport' },
+            { emoji: '🪃', category: 'sport' },
+            { emoji: '🥅', category: 'sport' },
+            { emoji: '⛳', category: 'sport' },
+            { emoji: '🪁', category: 'sport' },
+            { emoji: '🏹', category: 'sport' },
+            { emoji: '🎣', category: 'sport' },
+            { emoji: '🤿', category: 'sport' },
+            { emoji: '🥊', category: 'sport' },
+            { emoji: '🥋', category: 'sport' },
+            { emoji: '🎽', category: 'sport' },
+            { emoji: '🛹', category: 'sport' },
+            { emoji: '🛷', category: 'sport' },
+            { emoji: '⛸️', category: 'sport' },
+            { emoji: '🥌', category: 'sport' },
+            { emoji: '🎿', category: 'sport' },
+            { emoji: '⛷️', category: 'sport' },
+            
+            // Music
+            { emoji: '🎵', category: 'music' },
+            { emoji: '🎶', category: 'music' },
+            { emoji: '🎼', category: 'music' },
+            { emoji: '🎤', category: 'music' },
+            { emoji: '🎧', category: 'music' },
+            { emoji: '📻', category: 'music' },
+            { emoji: '🎷', category: 'music' },
+            { emoji: '🎸', category: 'music' },
+            { emoji: '🎹', category: 'music' },
+            { emoji: '🎺', category: 'music' },
+            { emoji: '🎻', category: 'music' },
+            { emoji: '🪕', category: 'music' },
+            { emoji: '🥁', category: 'music' },
+            { emoji: '🪘', category: 'music' },
+            
+            // Weather
+            { emoji: '☀️', category: 'weather' },
+            { emoji: '🌤️', category: 'weather' },
+            { emoji: '⛅', category: 'weather' },
+            { emoji: '🌥️', category: 'weather' },
+            { emoji: '☁️', category: 'weather' },
+            { emoji: '🌦️', category: 'weather' },
+            { emoji: '🌧️', category: 'weather' },
+            { emoji: '⛈️', category: 'weather' },
+            { emoji: '🌩️', category: 'weather' },
+            { emoji: '🌨️', category: 'weather' },
+            { emoji: '❄️', category: 'weather' },
+            { emoji: '☃️', category: 'weather' },
+            { emoji: '⛄', category: 'weather' },
+            { emoji: '🌬️', category: 'weather' },
+            { emoji: '💨', category: 'weather' },
+            { emoji: '🌪️', category: 'weather' },
+            { emoji: '🌫️', category: 'weather' },
+            { emoji: '🌈', category: 'weather' },
+            { emoji: '☂️', category: 'weather' },
+            { emoji: '☔', category: 'weather' },
+            { emoji: '⚡', category: 'weather' },
+            { emoji: '🔥', category: 'weather' },
+            { emoji: '💧', category: 'weather' },
+            { emoji: '🌊', category: 'weather' },
+            
+            // Space
+            { emoji: '🌙', category: 'space' },
+            { emoji: '🌛', category: 'space' },
+            { emoji: '🌜', category: 'space' },
+            { emoji: '🌚', category: 'space' },
+            { emoji: '🌕', category: 'space' },
+            { emoji: '🌖', category: 'space' },
+            { emoji: '🌗', category: 'space' },
+            { emoji: '🌘', category: 'space' },
+            { emoji: '🌑', category: 'space' },
+            { emoji: '🌒', category: 'space' },
+            { emoji: '🌓', category: 'space' },
+            { emoji: '🌔', category: 'space' },
+            { emoji: '🪐', category: 'space' },
+            { emoji: '💫', category: 'space' },
+            { emoji: '⭐', category: 'space' },
+            { emoji: '🌟', category: 'space' },
+            { emoji: '✨', category: 'space' },
+            { emoji: '⚡', category: 'space' },
+            { emoji: '☄️', category: 'space' },
+            { emoji: '💥', category: 'space' },
+            { emoji: '🌌', category: 'space' },
+            { emoji: '🌠', category: 'space' },
+            { emoji: '🌍', category: 'space' },
+            { emoji: '🌎', category: 'space' },
+            { emoji: '🌏', category: 'space' },
+            { emoji: '🚀', category: 'space' },
+            { emoji: '🛸', category: 'space' },
+            { emoji: '🛰️', category: 'space' },
+            
+            // Hearts & Faces
+            { emoji: '❤️', category: 'heart' },
+            { emoji: '🧡', category: 'heart' },
+            { emoji: '💛', category: 'heart' },
+            { emoji: '💚', category: 'heart' },
+            { emoji: '💙', category: 'heart' },
+            { emoji: '💜', category: 'heart' },
+            { emoji: '🖤', category: 'heart' },
+            { emoji: '🤍', category: 'heart' },
+            { emoji: '🤎', category: 'heart' },
+            { emoji: '💕', category: 'heart' },
+            { emoji: '💞', category: 'heart' },
+            { emoji: '💓', category: 'heart' },
+            { emoji: '💗', category: 'heart' },
+            { emoji: '💖', category: 'heart' },
+            { emoji: '💘', category: 'heart' },
+            { emoji: '💝', category: 'heart' },
+            
+            { emoji: '😀', category: 'face' },
+            { emoji: '😃', category: 'face' },
+            { emoji: '😄', category: 'face' },
+            { emoji: '😁', category: 'face' },
+            { emoji: '😆', category: 'face' },
+            { emoji: '😅', category: 'face' },
+            { emoji: '🤣', category: 'face' },
+            { emoji: '😂', category: 'face' },
+            { emoji: '🙂', category: 'face' },
+            { emoji: '🙃', category: 'face' },
+            { emoji: '😉', category: 'face' },
+            { emoji: '😊', category: 'face' },
+            { emoji: '😇', category: 'face' },
+            { emoji: '🥰', category: 'face' },
+            { emoji: '😍', category: 'face' },
+            { emoji: '🤩', category: 'face' },
+            { emoji: '😘', category: 'face' },
+            { emoji: '😗', category: 'face' },
+            { emoji: '😚', category: 'face' },
+            { emoji: '😙', category: 'face' },
+            { emoji: '😋', category: 'face' },
+            { emoji: '😛', category: 'face' },
+            { emoji: '😜', category: 'face' },
+            { emoji: '🤪', category: 'face' },
+            { emoji: '😝', category: 'face' },
+            { emoji: '🤑', category: 'face' },
+            { emoji: '🤗', category: 'face' },
+            { emoji: '🤭', category: 'face' },
+            { emoji: '🤫', category: 'face' },
+            { emoji: '🤔', category: 'face' },
+            { emoji: '🤐', category: 'face' },
+            { emoji: '🤨', category: 'face' },
+            { emoji: '😐', category: 'face' },
+            { emoji: '😑', category: 'face' },
+            { emoji: '😶', category: 'face' },
+            { emoji: '😏', category: 'face' },
+            { emoji: '😒', category: 'face' },
+            { emoji: '🙄', category: 'face' },
+            { emoji: '😬', category: 'face' },
+            { emoji: '🤥', category: 'face' },
+            { emoji: '😌', category: 'face' },
+            { emoji: '😔', category: 'face' },
+            { emoji: '😪', category: 'face' },
+            { emoji: '🤤', category: 'face' },
+            { emoji: '😴', category: 'face' },
+            { emoji: '😷', category: 'face' },
+            { emoji: '🤒', category: 'face' },
+            { emoji: '🤕', category: 'face' },
+            { emoji: '🤢', category: 'face' },
+            { emoji: '🤮', category: 'face' },
+            { emoji: '🤧', category: 'face' },
+            { emoji: '🥵', category: 'face' },
+            { emoji: '🥶', category: 'face' },
+            { emoji: '🥴', category: 'face' },
+            { emoji: '😵', category: 'face' },
+            { emoji: '🤯', category: 'face' },
+            { emoji: '🤠', category: 'face' },
+            { emoji: '🥳', category: 'face' },
+            { emoji: '😎', category: 'face' },
+            { emoji: '🤓', category: 'face' },
+            { emoji: '🧐', category: 'face' }
+        ];
+
+        let currentIndex = 0;
+        let contextTarget = null;
+
+        // Color schemes for categories
+        const colorSchemes = {
+            animal: ['#FFE5B4', '#FFD4A3'],
+            nature: ['#98FB98', '#90EE90'],
+            food: ['#FFD700', '#FFA500'],
+            sport: ['#98D8C8', '#7FD8BE'],
+            music: ['#DDA0DD', '#DA70D6'],
+            weather: ['#87CEEB', '#00BFFF'],
+            space: ['#191970', '#6A5ACD'],
+            heart: ['#FFB6C1', '#FF69B4'],
+            face: ['#FFE4B5', '#FFDAB9'],
+            object: ['#87CEEB', '#87CEFA']
+        };
+
+        function createGallery() {
+            const gallery = document.getElementById('gallery');
+            
+            // Create 400 emoji cards
+            for (let i = 0; i < 400; i++) {
+                const data = emojiData[i % emojiData.length];
+                const card = document.createElement('div');
+                card.className = `emoji-card ${data.category}`;
+                card.textContent = data.emoji;
+                card.dataset.index = i;
+                card.dataset.emoji = data.emoji;
+                card.dataset.category = data.category;
+                
+                // Set custom color based on index for variety
+                const colors = colorSchemes[data.category] || colorSchemes.object;
+                const hueShift = (i * 3) % 360;
+                card.style.setProperty('--c1', colors[0]);
+                card.style.setProperty('--c2', colors[1]);
+                card.style.filter = `hue-rotate(${hueShift}deg)`;
+                
+                card.onclick = () => openModal(i);
+                card.oncontextmenu = (e) => {
+                    e.preventDefault();
+                    showContextMenu(e, i);
+                };
+                
+                gallery.appendChild(card);
+            }
+        }
+
+        function openModal(index) {
+            currentIndex = index;
+            const modal = document.getElementById('modal');
+            const data = emojiData[index % emojiData.length];
+            const colors = colorSchemes[data.category] || colorSchemes.object;
+            
+            document.getElementById('modalEmoji').textContent = data.emoji;
+            document.getElementById('modalContent').style.setProperty('--modal-c1', colors[0]);
+            document.getElementById('modalContent').style.setProperty('--modal-c2', colors[1]);
+            document.getElementById('modalInfo').textContent = `${index + 1} / 400`;
+            
+            modal.classList.add('active');
+        }
+
+        function closeModal() {
+            document.getElementById('modal').classList.remove('active');
+        }
+
+        function navigate(dir) {
+            currentIndex = (currentIndex + dir + 400) % 400;
+            openModal(currentIndex);
+        }
+
+        function showContextMenu(e, index) {
+            contextTarget = index;
+            const menu = document.getElementById('contextMenu');
+            menu.style.left = e.pageX + 'px';
+            menu.style.top = e.pageY + 'px';
+            menu.classList.add('active');
+            
+            document.addEventListener('click', hideContextMenu);
+        }
+
+        function hideContextMenu() {
+            document.getElementById('contextMenu').classList.remove('active');
+            document.removeEventListener('click', hideContextMenu);
+        }
+
+        function downloadEmoji() {
+            if (contextTarget === null) return;
+            
+            const data = emojiData[contextTarget % emojiData.length];
+            const colors = colorSchemes[data.category] || colorSchemes.object;
+            
+            // Create canvas
+            const canvas = document.createElement('canvas');
+            canvas.width = 512;
+            canvas.height = 512;
+            const ctx = canvas.getContext('2d');
+            
+            // Draw gradient background
+            const gradient = ctx.createLinearGradient(0, 0, 512, 512);
+            gradient.addColorStop(0, colors[0]);
+            gradient.addColorStop(1, colors[1]);
+            ctx.fillStyle = gradient;
+            ctx.fillRect(0, 0, 512, 512);
+            
+            // Draw emoji
+            ctx.font = '256px sans-serif';
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            ctx.fillText(data.emoji, 256, 256);
+            
+            // Download
+            canvas.toBlob(blob => {
+                const url = URL.createObjectURL(blob);
+                const link = document.createElement('a');
+                link.href = url;
+                link.download = `emoji-${contextTarget + 1}.png`;
+                link.click();
+                URL.revokeObjectURL(url);
+            });
+            
+            hideContextMenu();
+        }
+
+        function copyEmoji() {
+            if (contextTarget === null) return;
+            const data = emojiData[contextTarget % emojiData.length];
+            navigator.clipboard.writeText(data.emoji);
+            hideContextMenu();
+        }
+
+        // Keyboard navigation
+        document.addEventListener('keydown', (e) => {
+            if (document.getElementById('modal').classList.contains('active')) {
+                if (e.key === 'ArrowLeft') navigate(-1);
+                if (e.key === 'ArrowRight') navigate(1);
+                if (e.key === 'Escape') closeModal();
+            }
+        });
+
+        // Initialize
+        createGallery();
+    </script>
+</body>
+</html>
