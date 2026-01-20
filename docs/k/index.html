@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🌤️ 춘천 날씨 놀이터</title>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700;900&family=Gochi+Hand&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Noto Sans KR', sans-serif;
+            background: linear-gradient(180deg, #87ceeb 0%, #e8f4fc 50%, #fff 100%);
+            min-height: 100vh;
+            padding: 20px;
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+
+        header {
+            text-align: center;
+            padding: 30px 20px;
+            margin-bottom: 30px;
+        }
+
+        h1 {
+            font-family: 'Gochi Hand', cursive;
+            font-size: 3rem;
+            color: #2c3e50;
+            text-shadow: 3px 3px 0 #ffd93d;
+            margin-bottom: 10px;
+        }
+
+        header p {
+            font-size: 1.1rem;
+            color: #555;
+            background: rgba(255,255,255,0.7);
+            display: inline-block;
+            padding: 8px 20px;
+            border-radius: 20px;
+        }
+
+        header span {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 12px 24px;
+            border-radius: 30px;
+            font-weight: 700;
+            font-size: 1.2rem;
+            margin: 20px 0;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        nav {
+            background: white;
+            border-radius: 20px;
+            padding: 25px;
+            margin-bottom: 30px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+            border-left: 5px solid #4a90d9;
+        }
+
+        nav h2 {
+            color: #4a90d9;
+            margin-bottom: 15px;
+        }
+
+        nav p {
+            line-height: 1.8;
+            color: #444;
+        }
+
+        nav aside {
+            background: linear-gradient(135deg, #fff3cd 0%, #ffeaa7 100%);
+            border-radius: 12px;
+            padding: 15px 20px;
+            margin-top: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 0.95rem;
+            color: #856404;
+        }
+
+        nav button {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 25px;
+            font-size: 1rem;
+            font-weight: 700;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            margin-top: 15px;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        nav button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(102, 126, 234, 0.4);
+        }
+
+        main {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 25px;
+        }
+
+        article {
+            background: white;
+            border-radius: 24px;
+            overflow: hidden;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.1);
+            transition: transform 0.3s ease;
+            text-align: center;
+        }
+
+        article:hover {
+            transform: translateY(-8px);
+        }
+
+        article h3 {
+            padding: 18px;
+            font-size: 1.2rem;
+            font-weight: 700;
+        }
+
+        article:nth-child(1) h3 { background: linear-gradient(135deg, #ff9a9e 0%, #fecfef 100%); color: #c44569; }
+        article:nth-child(2) h3 { background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%); color: #38ada9; }
+        article:nth-child(3) h3 { background: linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%); color: #e17055; }
+        article:nth-child(4) h3 { background: linear-gradient(135deg, #d299c2 0%, #fef9d7 100%); color: #9b59b6; }
+
+        article span {
+            font-size: 4rem;
+            display: block;
+            padding-top: 25px;
+            animation: bounce 2s ease-in-out infinite;
+        }
+
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+
+        article p {
+            font-size: 2rem;
+            font-weight: 900;
+            color: #2c3e50;
+            padding: 15px 0 5px;
+        }
+
+        article small {
+            font-size: 1.1rem;
+            color: #666;
+            display: block;
+            padding-bottom: 25px;
+        }
+
+        @media (max-width: 768px) {
+            h1 { font-size: 2rem; }
+            main { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>🌤️ 춘천 날씨 놀이터</h1>
+        <p>강원도 춘천시의 오늘 날씨는 어떨까요?</p>
+        <span>📍 강원도 춘천시</span>
+    </header>
+
+    <nav>
+        <h2>📚 학습 안내</h2>
+        <p>아래에는 <strong>4개의 귀여운 날씨 사이트</strong>가 있어요! 각 사이트에서 날씨 정보를 가져오는 연습을 해보세요. 🎉</p>
+        <aside>🎲 <strong>참고:</strong> 날씨는 페이지를 새로고침할 때마다 랜덤으로 바뀌어요!</aside>
+        <button onclick="location.reload()">🔄 날씨 새로고침</button>
+    </nav>
+
+    <main>
+        <article>
+            <h3>🌸 해님이네 기상청</h3>
+            <span id="icon-1">☀️</span>
+            <p id="weather-1">맑음</p>
+            <small id="temp-1">-3°C</small>
+        </article>
+
+        <article>
+            <h3>🐰 토끼 날씨마을</h3>
+            <span id="icon-2">☀️</span>
+            <p id="weather-2">맑음</p>
+            <small id="temp-2">-2°C</small>
+        </article>
+
+        <article>
+            <h3>🧸 곰돌이 일기예보</h3>
+            <span id="icon-3">☀️</span>
+            <p id="weather-3">맑음</p>
+            <small id="temp-3">-1°C</small>
+        </article>
+
+        <article>
+            <h3>🌈 무지개 기상대</h3>
+            <span id="icon-4">☁️</span>
+            <p id="weather-4">흐림</p>
+            <small id="temp-4">-4°C</small>
+        </article>
+    </main>
+
+    <script>
+        const weatherTypes = [
+            { name: '맑음', icon: '☀️' },
+            { name: '흐림', icon: '☁️' },
+            { name: '비', icon: '🌧️' },
+            { name: '눈', icon: '❄️' }
+        ];
+
+        function setRandomWeather() {
+            for (let i = 1; i <= 4; i++) {
+                const randomIndex = Math.floor(Math.random() * weatherTypes.length);
+                const weather = weatherTypes[randomIndex];
+                const randomTemp = Math.floor(Math.random() * 15) - 10;
+
+                document.getElementById(`weather-${i}`).textContent = weather.name;
+                document.getElementById(`icon-${i}`).textContent = weather.icon;
+                document.getElementById(`temp-${i}`).textContent = `${randomTemp}°C`;
+            }
+        }
+
+        setRandomWeather();
+    </script>
+</body>
+</html>
